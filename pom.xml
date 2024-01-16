@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.VintageCarClub</groupId>
-	<artifactId>management</artifactId>
+	<artifactId>VintageCarClubManagement</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>management</name>
 	<description>Vintage Car Club Management</description>
