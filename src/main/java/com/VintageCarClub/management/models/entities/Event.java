@@ -1,24 +1,34 @@
 package com.VintageCarClub.management.models.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+@Entity
+@Table(name = "events")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "event_date")
+    @Column(name = "event_date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "location")
+    @Column(name = "location", nullable = false)
     private String location;
 
     @ManyToMany
@@ -28,55 +38,4 @@ public class Event {
             inverseJoinColumns = @JoinColumn(name = "member_id")
     )
     private Set<Member> attendees = new HashSet<>();
-
-
-    public Event() {
-    }
-
-    public Event(String name, LocalDate date, String location) {
-        this.name = name;
-        this.date = date;
-        this.location = location;
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public Set<Member> getAttendees() {
-        return attendees;
-    }
-
-    public void setAttendees(Set<Member> attendees) {
-        this.attendees = attendees;
-    }
 }
