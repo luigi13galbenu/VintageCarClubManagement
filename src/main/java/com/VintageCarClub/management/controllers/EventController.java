@@ -1,7 +1,6 @@
 package com.VintageCarClub.management.controllers;
 
 import com.VintageCarClub.management.models.entities.Event;
-import com.VintageCarClub.management.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
