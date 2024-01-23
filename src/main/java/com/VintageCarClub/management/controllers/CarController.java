@@ -1,7 +1,10 @@
 package com.VintageCarClub.management.controllers;
 
+import com.VintageCarClub.management.models.dtos.CarRequestDto;
+import com.VintageCarClub.management.models.dtos.CarResponseDto;
 import com.VintageCarClub.management.models.entities.Car;
 import com.VintageCarClub.management.services.CarService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,30 +19,29 @@ public class CarController {
     private CarService carService;
 
     @GetMapping
-    public ResponseEntity<List<Car>> getAllCars() {
+    public ResponseEntity<List<CarResponseDto>> getAllCars() {
         return ResponseEntity.ok(carService.findAllCars());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Car> getCarById(@PathVariable Long id) {
-        return carService.findCarById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<CarResponseDto> getCar(@PathVariable Long id) {
+        CarResponseDto dto = carService.findCarById(id);
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping
-    public ResponseEntity<Car> createCar(@RequestBody Car car) {
+    public ResponseEntity<CarResponseDto> createCar(@RequestBody Car car) {
         return ResponseEntity.ok(carService.saveCar(car));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Car> updateCar(@PathVariable Long id, @RequestBody Car car) {
-        return carService.findCarById(id)
-                .map(storedCar -> {
-                    car.setId(id);
-                    return ResponseEntity.ok(carService.saveCar(car));
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<CarResponseDto> updateCar(@PathVariable Long id, @RequestBody CarRequestDto carDto) {
+        try {
+            CarResponseDto updatedCar = carService.updateCar(id, carDto);
+            return ResponseEntity.ok(updatedCar);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")

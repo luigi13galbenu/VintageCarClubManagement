@@ -1,8 +1,10 @@
 package com.VintageCarClub.management.controllers;
 
-import com.VintageCarClub.management.models.entities.Event;
+import com.VintageCarClub.management.models.dtos.EventRequestDto;
+import com.VintageCarClub.management.models.dtos.EventResponseDto;
 import com.VintageCarClub.management.services.EventService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,42 +12,53 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/events")
-public
-class EventController {
+public class EventController {
 
-    @Autowired
-    private EventService eventService;
+    private final EventService eventService;
 
-    @GetMapping
-    public ResponseEntity<List<Event>> getAllEvents() {
-        return ResponseEntity.ok(eventService.findAllEvents());
+    public EventController(EventService eventService) {
+        this.eventService = eventService;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
-        return eventService.findEventById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public ResponseEntity<Event> createEvent(@RequestBody Event event) {
-        return ResponseEntity.ok(eventService.saveEvent(event));
+    public ResponseEntity<EventResponseDto> getEventById(@PathVariable Long id) {
+        try {
+            EventResponseDto eventDto = eventService.findEventById(id);
+            return ResponseEntity.ok(eventDto);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Event event) {
-        return eventService.findEventById(id)
-                .map(storedEvent -> {
-                    event.setId(id);
-                    return ResponseEntity.ok(eventService.saveEvent(event));
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<EventResponseDto> updateEvent(@PathVariable Long id, @RequestBody EventRequestDto eventDto) {
+        try {
+            EventResponseDto updatedEvent = eventService.updateEvent(id, eventDto);
+            return ResponseEntity.ok(updatedEvent);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<EventResponseDto> createEvent(@RequestBody EventRequestDto eventDto) {
+        EventResponseDto newEvent = eventService.saveEvent(eventDto);
+        return new ResponseEntity<>(newEvent, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
-        eventService.deleteEvent(id);
-        return ResponseEntity.ok().build();
+        try {
+            eventService.deleteEvent(id);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<EventResponseDto>> getAllEvents() {
+        List<EventResponseDto> events = eventService.findAllEvents();
+        return ResponseEntity.ok(events);
     }
 }
