@@ -19,7 +19,7 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public CarResponseDto saveCar(Car carDto) {
+    public CarResponseDto saveCar(CarRequestDto carDto) {
         Car car = new Car();
         car.setMake(carDto.getMake());
         car.setModel(carDto.getModel());

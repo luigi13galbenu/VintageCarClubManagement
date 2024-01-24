@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +26,9 @@ public class Member {
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    @Column(name = "registration_date")
+    private LocalDate registrationDate;
 
     @ManyToMany
     @JoinTable(
