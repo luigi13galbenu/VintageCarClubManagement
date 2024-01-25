@@ -4,6 +4,7 @@ import com.VintageCarClub.management.models.dtos.EventRequestDto;
 import com.VintageCarClub.management.models.dtos.EventResponseDto;
 import com.VintageCarClub.management.services.EventService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EventResponseDto> updateEvent(@PathVariable Long id, @RequestBody EventRequestDto eventDto) {
+    public ResponseEntity<EventResponseDto> updateEvent(@PathVariable Long id,@Valid @RequestBody EventRequestDto eventDto) {
         try {
             EventResponseDto updatedEvent = eventService.updateEvent(id, eventDto);
             return ResponseEntity.ok(updatedEvent);
@@ -41,7 +42,7 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<EventResponseDto> createEvent(@RequestBody EventRequestDto eventDto) {
+    public ResponseEntity<EventResponseDto> createEvent(@Valid @RequestBody EventRequestDto eventDto) {
         EventResponseDto newEvent = eventService.saveEvent(eventDto);
         return new ResponseEntity<>(newEvent, HttpStatus.CREATED);
     }

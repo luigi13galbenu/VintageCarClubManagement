@@ -2,51 +2,50 @@ package com.VintageCarClub.management.controllers;
 
 import com.VintageCarClub.management.models.dtos.CarRequestDto;
 import com.VintageCarClub.management.models.dtos.CarResponseDto;
-import com.VintageCarClub.management.models.entities.Car;
 import com.VintageCarClub.management.services.CarService;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/cars")
 public class CarController {
 
-    @Autowired
-    private CarService carService;
+    private final CarService carService;
 
-    @GetMapping
-    public ResponseEntity<List<CarResponseDto>> getAllCars() {
-        return ResponseEntity.ok(carService.findAllCars());
+
+    public CarController(CarService carService) {
+        this.carService = carService;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CarResponseDto> getCar(@PathVariable Long id) {
-        CarResponseDto dto = carService.findCarById(id);
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<CarResponseDto> getCarById(@PathVariable Long id) {
+        CarResponseDto car = carService.findCarById(id);
+        return ResponseEntity.ok(car);
     }
 
     @PostMapping
-    public ResponseEntity<CarResponseDto> createCar(@RequestBody Car car) {
-        return ResponseEntity.ok(carService.saveCar(car));
+    public ResponseEntity<CarResponseDto> createCar(@Valid @RequestBody CarRequestDto carRequestDto) {
+        CarResponseDto newCar = carService.saveCar(carRequestDto);
+        return new ResponseEntity<>(newCar, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CarResponseDto> updateCar(@PathVariable Long id, @RequestBody CarRequestDto carDto) {
-        try {
-            CarResponseDto updatedCar = carService.updateCar(id, carDto);
-            return ResponseEntity.ok(updatedCar);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<CarResponseDto> updateCar(@PathVariable Long id, @Valid @RequestBody CarRequestDto carRequestDto) {
+        CarResponseDto updatedCar = carService.updateCar(id, carRequestDto);
+        return ResponseEntity.ok(updatedCar);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCar(@PathVariable Long id) {
         carService.deleteCar(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<CarResponseDto>> getAllCars() {
+        List<CarResponseDto> cars = carService.findAllCars();
+        return ResponseEntity.ok(cars);
     }
 }
